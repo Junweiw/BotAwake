@@ -1,0 +1,218 @@
+import Cocoa
+
+// BotAwake — a menu-bar switch that keeps the Mac awake so the Lark bots stay
+// reachable, while still letting the screen sleep & lock. Pure caffeinate under
+// the hood. Built locally, no third-party dependencies.
+
+enum Mode: Equatable {
+    case normal          // factory behavior: Mac sleeps when idle
+    case stayAwake       // -i -m -s : awake, screen can sleep & lock
+    case powerOnly       // like stayAwake but only while on AC power
+    case timed(Int)      // awake for N seconds, then auto-return to normal
+    case screenOn        // -d -i -m -s : display stays lit too (no lock)
+}
+
+final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
+    let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    var mode: Mode = .normal
+    var caffeinate: Process?
+    var powerTimer: Timer?
+    var timedDeadline: Date?
+
+    func applicationDidFinishLaunching(_ note: Notification) {
+        NSApp.setActivationPolicy(.accessory)
+        if let button = statusItem.button {
+            button.image = symbol(false)
+            button.toolTip = "Bot reachability"
+        }
+        let menu = NSMenu()
+        menu.autoenablesItems = false
+        menu.delegate = self
+        statusItem.menu = menu
+        reconcile()
+        powerTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { [weak self] _ in
+            self?.reconcile()
+        }
+    }
+
+    // MARK: - Icon
+
+    func symbol(_ active: Bool) -> NSImage? {
+        let name = active ? "cup.and.saucer.fill" : "cup.and.saucer"
+        let img = NSImage(systemSymbolName: name, accessibilityDescription: "Bot reachability")
+        img?.isTemplate = true
+        return img
+    }
+
+    func isActive() -> Bool {
+        if case .normal = mode { return false }
+        return true
+    }
+
+    func updateIcon() {
+        statusItem.button?.image = symbol(isActive())
+    }
+
+    // MARK: - Power source
+
+    func onACPower() -> Bool {
+        let p = Process()
+        p.launchPath = "/usr/bin/pmset"
+        p.arguments = ["-g", "batt"]
+        let pipe = Pipe()
+        p.standardOutput = pipe
+        do { try p.run() } catch { return true }
+        p.waitUntilExit()
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let out = String(data: data, encoding: .utf8) ?? ""
+        return out.contains("AC Power")
+    }
+
+    // MARK: - caffeinate control
+
+    func stopCaffeinate() {
+        if let c = caffeinate {
+            c.terminationHandler = nil
+            if c.isRunning { c.terminate() }
+        }
+        caffeinate = nil
+    }
+
+    func startCaffeinate(_ args: [String]) {
+        stopCaffeinate()
+        let p = Process()
+        p.launchPath = "/usr/bin/caffeinate"
+        p.arguments = args
+        p.terminationHandler = { [weak self] _ in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                if case .timed = self.mode {     // timer ran out on its own
+                    self.setMode(.normal)
+                }
+            }
+        }
+        do { try p.run(); caffeinate = p } catch { caffeinate = nil }
+    }
+
+    // Bring the running caffeinate process in line with the desired mode + power.
+    func reconcile() {
+        switch mode {
+        case .normal:
+            stopCaffeinate()
+        case .stayAwake:
+            if caffeinate == nil { startCaffeinate(["-i", "-m", "-s"]) }
+        case .screenOn:
+            if caffeinate == nil { startCaffeinate(["-d", "-i", "-m", "-s"]) }
+        case .powerOnly:
+            if onACPower() {
+                if caffeinate == nil { startCaffeinate(["-i", "-m", "-s"]) }
+            } else {
+                stopCaffeinate()
+            }
+        case .timed:
+            if caffeinate == nil {
+                let remaining = max(1, Int(timedDeadline?.timeIntervalSinceNow ?? 0))
+                startCaffeinate(["-i", "-m", "-s", "-t", "\(remaining)"])
+            }
+        }
+        updateIcon()
+    }
+
+    func setMode(_ m: Mode) {
+        mode = m
+        if case .timed(let secs) = m {
+            timedDeadline = Date().addingTimeInterval(TimeInterval(secs))
+        } else {
+            timedDeadline = nil
+        }
+        stopCaffeinate()   // restart cleanly under the new mode
+        reconcile()
+    }
+
+    // MARK: - Actions
+
+    @objc func chooseNormal()  { setMode(.normal) }
+    @objc func chooseStay()    { setMode(.stayAwake) }
+    @objc func choosePower()   { setMode(.powerOnly) }
+    @objc func chooseScreen()  { setMode(.screenOn) }
+    @objc func chooseTimed1()  { setMode(.timed(3600)) }
+    @objc func chooseTimed4()  { setMode(.timed(4 * 3600)) }
+    @objc func quit()          { stopCaffeinate(); NSApp.terminate(nil) }
+
+    // MARK: - Menu
+
+    func mk(_ title: String, _ sel: Selector?, on: Bool, sub: String?) -> NSMenuItem {
+        let it = NSMenuItem(title: title, action: sel, keyEquivalent: "")
+        it.target = self
+        it.state = on ? .on : .off
+        if let s = sub { it.subtitle = s }
+        return it
+    }
+
+    func info(_ title: String, _ sub: String) -> NSMenuItem {
+        let it = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+        it.isEnabled = false
+        it.subtitle = sub
+        return it
+    }
+
+    func statusLine() -> String {
+        switch mode {
+        case .normal:    return "Now: Normal — Mac sleeps when idle"
+        case .stayAwake: return "Now: Stay awake — keep the lid open"
+        case .powerOnly: return onACPower() ? "Now: Awake on power — active (plugged in)"
+                                            : "Now: Awake on power — paused (on battery)"
+        case .screenOn:  return "Now: Screen stays on — not locked"
+        case .timed:
+            let mins = max(0, Int((timedDeadline?.timeIntervalSinceNow ?? 0) / 60))
+            return "Now: Timed — ~\(mins) min left, then Normal"
+        }
+    }
+
+    func isTimed() -> Bool { if case .timed = mode { return true }; return false }
+
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        menu.removeAllItems()
+
+        menu.addItem(info("Bot reachability", statusLine()))
+        menu.addItem(.separator())
+
+        menu.addItem(mk("Normal (allow sleep)", #selector(chooseNormal), on: mode == .normal,
+                        sub: "Bot answers only while you're using the Mac. Best battery."))
+        menu.addItem(mk("Stay awake", #selector(chooseStay), on: mode == .stayAwake,
+                        sub: "Screen can sleep & lock · lid must stay OPEN · drains battery."))
+        menu.addItem(mk("Awake on power only", #selector(choosePower), on: mode == .powerOnly,
+                        sub: "Auto-pauses on battery, resumes when plugged in. Safe default."))
+
+        let timedItem = NSMenuItem(title: "Awake for a set time", action: nil, keyEquivalent: "")
+        timedItem.state = isTimed() ? .on : .off
+        timedItem.subtitle = "Auto-returns to Normal when the timer ends."
+        let subMenu = NSMenu()
+        let t1 = NSMenuItem(title: "1 hour", action: #selector(chooseTimed1), keyEquivalent: ""); t1.target = self
+        let t4 = NSMenuItem(title: "4 hours", action: #selector(chooseTimed4), keyEquivalent: ""); t4.target = self
+        subMenu.addItem(t1); subMenu.addItem(t4)
+        timedItem.submenu = subMenu
+        menu.addItem(timedItem)
+
+        menu.addItem(mk("Keep screen on too", #selector(chooseScreen), on: mode == .screenOn,
+                        sub: "Display stays lit, no lock. Demos only. Highest battery."))
+
+        menu.addItem(.separator())
+        menu.addItem(info("Reminder · the lid",
+                          "Closing the lid = sleep (bot offline) — UNLESS plugged in + external display (clamshell)."))
+        menu.addItem(info("Reminder · privacy",
+                          "Clamshell shows your unlocked desktop. Press \u{2303}\u{2318}Q to lock — bot stays reachable."))
+
+        menu.addItem(.separator())
+        let q = NSMenuItem(title: "Quit BotAwake", action: #selector(quit), keyEquivalent: "q")
+        q.target = self
+        menu.addItem(q)
+
+        updateIcon()
+    }
+}
+
+let app = NSApplication.shared
+let delegate = AppDelegate()
+app.delegate = delegate
+app.run()
