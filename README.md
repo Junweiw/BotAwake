@@ -63,7 +63,7 @@ the Mac is free to sleep. Click it to choose a mode:
 ## Install
 
 ```bash
-git clone https://github.com/<your-username>/BotAwake.git
+git clone https://github.com/Junweiw/BotAwake.git
 cd BotAwake
 chmod +x build.sh install.sh uninstall.sh
 ./install.sh
