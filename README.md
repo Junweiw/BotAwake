@@ -12,12 +12,17 @@ the lid/power/privacy rules right in the menu so you always know what to expect.
 No third-party dependencies. Just a thin, friendly wrapper around the built-in
 `caffeinate` tool.
 
+![BotAwake demo](docs/demo.gif)
+
 ---
 
 ## What it does
 
 The menu-bar cup icon is filled when a keep-awake mode is active and empty when
 the Mac is free to sleep. Click it to choose a mode:
+
+![BotAwake menu](docs/menu.png)
+
 
 | Mode | What it does | Battery |
 |------|--------------|---------|
