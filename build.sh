@@ -11,6 +11,7 @@ command -v swiftc >/dev/null || { echo "error: swiftc not found. Run: xcode-sele
 rm -rf "$DIST"
 mkdir -p "$DIST/Contents/MacOS" "$DIST/Contents/Resources"
 cp Resources/Info.plist "$DIST/Contents/Info.plist"
+cp Resources/AppIcon.icns "$DIST/Contents/Resources/AppIcon.icns"
 swiftc -O Sources/main.swift -o "$DIST/Contents/MacOS/${APP_NAME}"
 
 echo "Built ${DIST}"
