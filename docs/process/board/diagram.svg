@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1740 830">
+  <!-- canvas -->
+  <rect x="0" y="0" width="1740" height="830" fill="#EFE9D9"/>
+
+  <!-- header -->
+  <rect x="100" y="50" width="640" height="80" fill="#0F0F0F"/>
+  <rect x="90" y="40" width="640" height="80" fill="#1F8A4C" stroke="#0F0F0F" stroke-width="4"/>
+  <text x="110" y="93" font-size="30" font-weight="700" fill="#EFE9D9">BOTAWAKE · 产品全生命周期</text>
+  <text x="90" y="163" font-size="18" fill="#2A2A2A">合盖保活模式 Lid-Closed Awake · 12 阶段 · 当前：阶段 3 设计待批准</text>
+
+  <!-- legend -->
+  <rect x="1130" y="52" width="22" height="22" fill="#1F8A4C" stroke="#0F0F0F" stroke-width="3"/>
+  <text x="1162" y="70" font-size="18" font-weight="700" fill="#0F0F0F">造 Build 1-8</text>
+  <rect x="1330" y="52" width="22" height="22" fill="#F06CA8" stroke="#0F0F0F" stroke-width="3"/>
+  <text x="1362" y="70" font-size="18" font-weight="700" fill="#0F0F0F">卖 Sell 9-10</text>
+  <rect x="1530" y="52" width="22" height="22" fill="#F5C518" stroke="#0F0F0F" stroke-width="3"/>
+  <text x="1562" y="70" font-size="18" font-weight="700" fill="#0F0F0F">学 Learn 11-12</text>
+
+  <!-- connectors row A -->
+  <line x1="460" y1="275" x2="496" y2="275" stroke="#0F0F0F" stroke-width="3"/>
+  <rect x="490" y="269" width="12" height="12" fill="#0F0F0F" transform="rotate(45 496 275)"/>
+  <line x1="870" y1="275" x2="906" y2="275" stroke="#0F0F0F" stroke-width="3"/>
+  <rect x="900" y="269" width="12" height="12" fill="#0F0F0F" transform="rotate(45 906 275)"/>
+  <line x1="1280" y1="275" x2="1316" y2="275" stroke="#0F0F0F" stroke-width="3"/>
+  <rect x="1310" y="269" width="12" height="12" fill="#0F0F0F" transform="rotate(45 1316 275)"/>
+  <!-- A -> B -->
+  <polyline points="1505,340 1505,375 275,375 275,404" fill="none" stroke="#0F0F0F" stroke-width="3"/>
+  <rect x="269" y="398" width="12" height="12" fill="#0F0F0F" transform="rotate(45 275 404)"/>
+  <!-- connectors row B -->
+  <line x1="460" y1="475" x2="496" y2="475" stroke="#0F0F0F" stroke-width="3"/>
+  <rect x="490" y="469" width="12" height="12" fill="#0F0F0F" transform="rotate(45 496 475)"/>
+  <line x1="870" y1="475" x2="906" y2="475" stroke="#0F0F0F" stroke-width="3"/>
+  <rect x="900" y="469" width="12" height="12" fill="#0F0F0F" transform="rotate(45 906 475)"/>
+  <line x1="1280" y1="475" x2="1316" y2="475" stroke="#0F0F0F" stroke-width="3"/>
+  <rect x="1310" y="469" width="12" height="12" fill="#0F0F0F" transform="rotate(45 1316 475)"/>
+  <!-- B -> C -->
+  <polyline points="1505,540 1505,575 275,575 275,604" fill="none" stroke="#0F0F0F" stroke-width="3"/>
+  <rect x="269" y="598" width="12" height="12" fill="#0F0F0F" transform="rotate(45 275 604)"/>
+  <!-- connectors row C -->
+  <line x1="460" y1="675" x2="496" y2="675" stroke="#0F0F0F" stroke-width="3"/>
+  <rect x="490" y="669" width="12" height="12" fill="#0F0F0F" transform="rotate(45 496 675)"/>
+  <line x1="870" y1="675" x2="906" y2="675" stroke="#0F0F0F" stroke-width="3"/>
+  <rect x="900" y="669" width="12" height="12" fill="#0F0F0F" transform="rotate(45 906 675)"/>
+  <line x1="1280" y1="675" x2="1316" y2="675" stroke="#0F0F0F" stroke-width="3"/>
+  <rect x="1310" y="669" width="12" height="12" fill="#0F0F0F" transform="rotate(45 1316 675)"/>
+  <!-- loop back 12 -> 2 -->
+  <polyline points="1505,740 1505,775 45,775 45,180 685,180 685,204" fill="none" stroke="#0F0F0F" stroke-width="3"/>
+  <rect x="679" y="198" width="12" height="12" fill="#0F0F0F" transform="rotate(45 685 204)"/>
+  <rect x="640" y="757" width="310" height="36" fill="#EFE9D9" stroke="#0F0F0F" stroke-width="3"/>
+  <text x="795" y="781" font-size="17" font-weight="700" fill="#0F0F0F" text-anchor="middle">回流：反馈 → 新一轮需求 / 设计</text>
+
+  <!-- ============ ROW A (Build 1-4) ============ -->
+  <!-- card 1 done -->
+  <rect x="100" y="220" width="370" height="130" fill="#0F0F0F"/>
+  <rect x="90" y="210" width="370" height="130" fill="#E4DCC4" stroke="#0F0F0F" stroke-width="4"/>
+  <rect x="94" y="214" width="14" height="122" fill="#1F8A4C"/>
+  <circle cx="145" cy="255" r="24" fill="#F5C518" stroke="#0F0F0F" stroke-width="4"/>
+  <text x="145" y="263" font-size="22" font-weight="700" fill="#0F0F0F" text-anchor="middle">1</text>
+  <text x="185" y="262" font-size="24" font-weight="700" fill="#0F0F0F">想法与核查</text>
+  <text x="185" y="302" font-size="16" fill="#2A2A2A">disablesleep 可行 · 含电池</text>
+  <rect x="345" y="222" width="96" height="30" fill="#1F8A4C" stroke="#0F0F0F" stroke-width="3"/>
+  <text x="393" y="243" font-size="15" font-weight="700" fill="#EFE9D9" text-anchor="middle">✓ 完成</text>
+  <!-- card 2 done -->
+  <rect x="510" y="220" width="370" height="130" fill="#0F0F0F"/>
+  <rect x="500" y="210" width="370" height="130" fill="#E4DCC4" stroke="#0F0F0F" stroke-width="4"/>
+  <rect x="504" y="214" width="14" height="122" fill="#1F8A4C"/>
+  <circle cx="555" cy="255" r="24" fill="#F5C518" stroke="#0F0F0F" stroke-width="4"/>
+  <text x="555" y="263" font-size="22" font-weight="700" fill="#0F0F0F" text-anchor="middle">2</text>
+  <text x="595" y="262" font-size="24" font-weight="700" fill="#0F0F0F">需求澄清</text>
+  <text x="595" y="302" font-size="16" fill="#2A2A2A">sudoers + 电量地板已锁定</text>
+  <rect x="755" y="222" width="96" height="30" fill="#1F8A4C" stroke="#0F0F0F" stroke-width="3"/>
+  <text x="803" y="243" font-size="15" font-weight="700" fill="#EFE9D9" text-anchor="middle">✓ 完成</text>
+  <!-- card 3 current -->
+  <rect x="922" y="222" width="370" height="130" fill="#F06CA8"/>
+  <rect x="910" y="210" width="370" height="130" fill="#EFE9D9" stroke="#0F0F0F" stroke-width="4"/>
+  <rect x="914" y="214" width="14" height="122" fill="#1F8A4C"/>
+  <circle cx="965" cy="255" r="24" fill="#F5C518" stroke="#0F0F0F" stroke-width="4"/>
+  <text x="965" y="263" font-size="22" font-weight="700" fill="#0F0F0F" text-anchor="middle">3</text>
+  <text x="1005" y="262" font-size="24" font-weight="700" fill="#0F0F0F">方案设计</text>
+  <text x="1005" y="302" font-size="16" fill="#2A2A2A">设计提案等待批准 HARD GATE</text>
+  <rect x="1165" y="222" width="96" height="30" fill="#F06CA8" stroke="#0F0F0F" stroke-width="3"/>
+  <text x="1213" y="243" font-size="15" font-weight="700" fill="#EFE9D9" text-anchor="middle">▶ 当前</text>
+  <!-- card 4 -->
+  <rect x="1330" y="220" width="370" height="130" fill="#0F0F0F"/>
+  <rect x="1320" y="210" width="370" height="130" fill="#EFE9D9" stroke="#0F0F0F" stroke-width="4"/>
+  <rect x="1324" y="214" width="14" height="122" fill="#1F8A4C"/>
+  <circle cx="1375" cy="255" r="24" fill="#F5C518" stroke="#0F0F0F" stroke-width="4"/>
+  <text x="1375" y="263" font-size="22" font-weight="700" fill="#0F0F0F" text-anchor="middle">4</text>
+  <text x="1415" y="262" font-size="24" font-weight="700" fill="#0F0F0F">PoC 概念验证</text>
+  <text x="1415" y="302" font-size="16" fill="#2A2A2A">真机合盖 5 分钟实测</text>
+
+  <!-- ============ ROW B (Build 5-8) ============ -->
+  <!-- card 5 -->
+  <rect x="100" y="420" width="370" height="130" fill="#0F0F0F"/>
+  <rect x="90" y="410" width="370" height="130" fill="#EFE9D9" stroke="#0F0F0F" stroke-width="4"/>
+  <rect x="94" y="414" width="14" height="122" fill="#1F8A4C"/>
+  <circle cx="145" cy="455" r="24" fill="#F5C518" stroke="#0F0F0F" stroke-width="4"/>
+  <text x="145" y="463" font-size="22" font-weight="700" fill="#0F0F0F" text-anchor="middle">5</text>
+  <text x="185" y="462" font-size="24" font-weight="700" fill="#0F0F0F">规格 Spec</text>
+  <text x="185" y="502" font-size="16" fill="#2A2A2A">可评审的设计规格文档</text>
+  <!-- card 6 -->
+  <rect x="510" y="420" width="370" height="130" fill="#0F0F0F"/>
+  <rect x="500" y="410" width="370" height="130" fill="#EFE9D9" stroke="#0F0F0F" stroke-width="4"/>
+  <rect x="504" y="414" width="14" height="122" fill="#1F8A4C"/>
+  <circle cx="555" cy="455" r="24" fill="#F5C518" stroke="#0F0F0F" stroke-width="4"/>
+  <text x="555" y="463" font-size="22" font-weight="700" fill="#0F0F0F" text-anchor="middle">6</text>
+  <text x="595" y="462" font-size="24" font-weight="700" fill="#0F0F0F">实施计划</text>
+  <text x="595" y="502" font-size="16" fill="#2A2A2A">拆成可独立验证的小步骤</text>
+  <!-- card 7 -->
+  <rect x="920" y="420" width="370" height="130" fill="#0F0F0F"/>
+  <rect x="910" y="410" width="370" height="130" fill="#EFE9D9" stroke="#0F0F0F" stroke-width="4"/>
+  <rect x="914" y="414" width="14" height="122" fill="#1F8A4C"/>
+  <circle cx="965" cy="455" r="24" fill="#F5C518" stroke="#0F0F0F" stroke-width="4"/>
+  <text x="965" y="463" font-size="22" font-weight="700" fill="#0F0F0F" text-anchor="middle">7</text>
+  <text x="1005" y="462" font-size="24" font-weight="700" fill="#0F0F0F">编码实现</text>
+  <text x="1005" y="502" font-size="16" fill="#2A2A2A">新模式 + sudoers 安装</text>
+  <!-- card 8 -->
+  <rect x="1330" y="420" width="370" height="130" fill="#0F0F0F"/>
+  <rect x="1320" y="410" width="370" height="130" fill="#EFE9D9" stroke="#0F0F0F" stroke-width="4"/>
+  <rect x="1324" y="414" width="14" height="122" fill="#1F8A4C"/>
+  <circle cx="1375" cy="455" r="24" fill="#F5C518" stroke="#0F0F0F" stroke-width="4"/>
+  <text x="1375" y="463" font-size="22" font-weight="700" fill="#0F0F0F" text-anchor="middle">8</text>
+  <text x="1415" y="462" font-size="24" font-weight="700" fill="#0F0F0F">验证与审查</text>
+  <text x="1415" y="502" font-size="16" fill="#2A2A2A">合盖实测 + Code Review</text>
+
+  <!-- ============ ROW C (Sell 9-10, Learn 11-12) ============ -->
+  <!-- card 9 -->
+  <rect x="100" y="620" width="370" height="130" fill="#0F0F0F"/>
+  <rect x="90" y="610" width="370" height="130" fill="#EFE9D9" stroke="#0F0F0F" stroke-width="4"/>
+  <rect x="94" y="614" width="14" height="122" fill="#F06CA8"/>
+  <circle cx="145" cy="655" r="24" fill="#F5C518" stroke="#0F0F0F" stroke-width="4"/>
+  <text x="145" y="663" font-size="22" font-weight="700" fill="#0F0F0F" text-anchor="middle">9</text>
+  <text x="185" y="662" font-size="24" font-weight="700" fill="#0F0F0F">GTM 上市策略</text>
+  <text x="185" y="702" font-size="16" fill="#2A2A2A">定位 · 受众 · 渠道 · 许可</text>
+  <!-- card 10 -->
+  <rect x="510" y="620" width="370" height="130" fill="#0F0F0F"/>
+  <rect x="500" y="610" width="370" height="130" fill="#EFE9D9" stroke="#0F0F0F" stroke-width="4"/>
+  <rect x="504" y="614" width="14" height="122" fill="#F06CA8"/>
+  <circle cx="555" cy="655" r="24" fill="#F5C518" stroke="#0F0F0F" stroke-width="4"/>
+  <text x="555" y="663" font-size="22" font-weight="700" fill="#0F0F0F" text-anchor="middle">10</text>
+  <text x="595" y="662" font-size="24" font-weight="700" fill="#0F0F0F">发布 Launch</text>
+  <text x="595" y="702" font-size="16" fill="#2A2A2A">v1.1.0 + Release + 发布帖</text>
+  <!-- card 11 -->
+  <rect x="920" y="620" width="370" height="130" fill="#0F0F0F"/>
+  <rect x="910" y="610" width="370" height="130" fill="#EFE9D9" stroke="#0F0F0F" stroke-width="4"/>
+  <rect x="914" y="614" width="14" height="122" fill="#F5C518"/>
+  <circle cx="965" cy="655" r="24" fill="#F5C518" stroke="#0F0F0F" stroke-width="4"/>
+  <text x="965" y="663" font-size="22" font-weight="700" fill="#0F0F0F" text-anchor="middle">11</text>
+  <text x="1005" y="662" font-size="24" font-weight="700" fill="#0F0F0F">反馈收集</text>
+  <text x="1005" y="702" font-size="16" fill="#2A2A2A">Stars · Issues · 自用记录</text>
+  <!-- card 12 -->
+  <rect x="1330" y="620" width="370" height="130" fill="#0F0F0F"/>
+  <rect x="1320" y="610" width="370" height="130" fill="#EFE9D9" stroke="#0F0F0F" stroke-width="4"/>
+  <rect x="1324" y="614" width="14" height="122" fill="#F5C518"/>
+  <circle cx="1375" cy="655" r="24" fill="#F5C518" stroke="#0F0F0F" stroke-width="4"/>
+  <text x="1375" y="663" font-size="22" font-weight="700" fill="#0F0F0F" text-anchor="middle">12</text>
+  <text x="1415" y="662" font-size="24" font-weight="700" fill="#0F0F0F">迭代 + 复盘</text>
+  <text x="1415" y="702" font-size="16" fill="#2A2A2A">Backlog 回流 · 经验入脑</text>
+</svg>
