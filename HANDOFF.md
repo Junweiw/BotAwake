@@ -2,6 +2,22 @@
 
 A guide for picking up this project on **any Mac** (not tied to the original machine).
 
+## ⏩ Current work (2026-06): Lid-Closed Awake mode — read this first
+
+Active feature in flight: a `lidClosed` mode using `pmset disablesleep` so the
+bot stays reachable with the lid closed, **even on battery**.
+
+- **State:** stages 1–2 done (fact-check + decisions locked); stage 3 design
+  proposal written, **awaiting user approval — HARD GATE: no spec, no
+  implementation code until approved.**
+- **Resume here:** `docs/process/2026-06-13-lid-closed-design-proposal-DRAFT.md`
+  (the proposal to re-present for approval) and
+  `docs/process/2026-06-12-dev-process-map.md` (12-stage lifecycle map, locked
+  decisions, artifact conventions). Live map mirror: Feishu doc
+  `CzBrdlphhohbqgxHhE6c31L5nsY` (check off stages as they complete).
+- **Next action:** get design approved → stage 4 PoC (5-min real-machine test)
+  → stage 5 spec in `docs/superpowers/specs/`.
+
 ## What this is
 
 A macOS menu-bar switch that keeps the Mac awake so background services (chat
@@ -71,8 +87,10 @@ settings are never modified, so there is nothing else to undo).
 | Lid closed, power only (no display) | ❌ sleeps |
 | Lid closed, on battery | ❌ sleeps |
 
-A lid-closed-on-power **override exists** (`sudo pmset -a disablesleep 1`) but was
-deliberately **not** built in (heat risk in a bag; system-wide change).
+A lid-closed **override exists** (`sudo pmset -a disablesleep 1`; works on
+battery too). Originally left out (heat risk in a bag; system-wide change), that
+decision was **reversed in 2026-06**: it is now being built in as the
+`lidClosed` mode with safety fallbacks — see "Current work" at the top.
 
 ## Modifying / rebuilding
 
