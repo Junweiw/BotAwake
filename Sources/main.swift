@@ -91,11 +91,31 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     // MARK: - Lid-closed (disablesleep) control
 
-    func setDisableSleep(_ enable: Bool) {
+    @discardableResult
+    func setDisableSleep(_ enable: Bool) -> Bool {
         let p = Process()
         p.launchPath = "/usr/bin/sudo"
         p.arguments = ["/usr/bin/pmset", "-a", "disablesleep", enable ? "1" : "0"]
-        do { try p.run(); p.waitUntilExit() } catch {}
+        do {
+            try p.run()
+            p.waitUntilExit()
+            return p.terminationStatus == 0
+        } catch {
+            return false
+        }
+    }
+
+    func isSudoersReady() -> Bool {
+        return FileManager.default.fileExists(atPath: "/etc/sudoers.d/botawake")
+    }
+
+    func showLidClosedAlert() {
+        NSApp.activate(ignoringOtherApps: true)
+        let alert = NSAlert()
+        alert.messageText = "Lid-closed mode needs one-time setup"
+        alert.informativeText = "Run this in Terminal, then select lid-closed mode again:\n\nsudo sh -c 'echo \"Cmnd_Alias BOTAWAKE = /usr/bin/pmset -a disablesleep 1, /usr/bin/pmset -a disablesleep 0\" > /etc/sudoers.d/botawake && echo \"ALL ALL=(ALL) NOPASSWD: BOTAWAKE\" >> /etc/sudoers.d/botawake && chmod 0440 /etc/sudoers.d/botawake'\n\nOr just run: ./install.sh  (handles this automatically)"
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
     }
 
     func isDisableSleepOn() -> Bool {
@@ -167,7 +187,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             }
         case .lidClosed(let floor):
             stopCaffeinate()
-            setDisableSleep(true)
+            if !isSudoersReady() {
+                notify("BotAwake", "Lid-closed mode: sudoers not set up. Run ./install.sh first.")
+                showLidClosedAlert()
+                setMode(.normal)
+                return
+            }
+            if !setDisableSleep(true) {
+                notify("BotAwake", "Lid-closed mode: sudo command failed. Check /etc/sudoers.d/botawake.")
+                setMode(.normal)
+                return
+            }
             if !onACPower() {
                 let pct = batteryPercent()
                 if pct < floor {
