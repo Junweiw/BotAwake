@@ -117,6 +117,41 @@ open dist/BotAwake.app
 Your system sleep settings are never modified, so there is nothing else to undo.
 系统休眠设置不会被修改，无需额外清理。
 
+### Agent install / 自动化安装
+
+> For AI agents, automation scripts, or any non-interactive environment. `install.sh`
+> calls `sudo` directly which requires a TTY and password prompt — agents need a
+> different approach for the lid-closed sudoers setup.
+>
+> 适用于 AI 代理、自动化脚本等非交互式环境。`install.sh` 中的 `sudo` 需要
+> 终端交互输入密码，自动化工具需改用以下方式。
+
+**Step 1 — Create the sudoers whitelist via native auth dialog (osascript):**
+**步骤 1 — 通过系统认证对话框创建 sudoers 白名单：**
+
+```bash
+# Triggers macOS admin password dialog — no Terminal interaction needed
+# 会弹出 macOS 管理员密码对话框，无需终端交互
+osascript -e 'do shell script "
+echo \"# BotAwake: allow NOPASSWD pmset disablesleep for lid-closed mode\" > /etc/sudoers.d/botawake
+echo \"Cmnd_Alias BOTAWAKE = /usr/bin/pmset -a disablesleep 1, /usr/bin/pmset -a disablesleep 0\" >> /etc/sudoers.d/botawake
+echo \"ALL ALL=(ALL) NOPASSWD: BOTAWAKE\" >> /etc/sudoers.d/botawake
+chmod 0440 /etc/sudoers.d/botawake
+" with administrator privileges with prompt "BotAwake needs to create a sudoers whitelist for lid-closed awake mode."'
+```
+
+**Step 2 — Run the install script (sudo part will be skipped):**
+**步骤 2 — 运行安装脚本（sudoers 部分会自动跳过）：**
+
+```bash
+./install.sh
+```
+
+If your agent cannot trigger GUI dialogs, skip Step 1 and rely on the app to prompt
+the user the first time they select lid-closed mode from the menu.
+
+如果代理无法触发 GUI 对话框，可跳过步骤 1，应用会在用户首次选择合盖模式时自动弹出认证对话框。
+
 ---
 
 ## 原理 / How It Works
