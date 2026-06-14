@@ -109,13 +109,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         return FileManager.default.fileExists(atPath: "/etc/sudoers.d/botawake")
     }
 
-    func showLidClosedAlert() {
-        NSApp.activate(ignoringOtherApps: true)
-        let alert = NSAlert()
-        alert.messageText = "Lid-closed mode needs one-time setup"
-        alert.informativeText = "Run this in Terminal, then select lid-closed mode again:\n\nsudo sh -c 'echo \"Cmnd_Alias BOTAWAKE = /usr/bin/pmset -a disablesleep 1, /usr/bin/pmset -a disablesleep 0\" > /etc/sudoers.d/botawake && echo \"ALL ALL=(ALL) NOPASSWD: BOTAWAKE\" >> /etc/sudoers.d/botawake && chmod 0440 /etc/sudoers.d/botawake'\n\nOr just run: ./install.sh  (handles this automatically)"
-        alert.addButton(withTitle: "OK")
-        alert.runModal()
+    // One-time setup: install the NOPASSWD sudoers rule via macOS's native
+    // admin dialog (Touch ID / password) — no Terminal needed. After this,
+    // every lid-closed toggle runs sudo pmset without a prompt.
+    @discardableResult
+    func installSudoers() -> Bool {
+        let install = "echo '# BotAwake: allow NOPASSWD pmset disablesleep for lid-closed mode' > /etc/sudoers.d/botawake; "
+            + "echo 'Cmnd_Alias BOTAWAKE = /usr/bin/pmset -a disablesleep 1, /usr/bin/pmset -a disablesleep 0' >> /etc/sudoers.d/botawake; "
+            + "echo 'ALL ALL=(ALL) NOPASSWD: BOTAWAKE' >> /etc/sudoers.d/botawake; "
+            + "chmod 0440 /etc/sudoers.d/botawake"
+        // Escape for an AppleScript string literal, then run with admin privileges.
+        let escaped = install
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\"", with: "\\\"")
+        let script = "do shell script \"\(escaped)\" with administrator privileges "
+            + "with prompt \"BotAwake needs a one-time setup to keep your Mac awake with the lid closed.\""
+        let p = Process()
+        p.launchPath = "/usr/bin/osascript"
+        p.arguments = ["-e", script]
+        do {
+            try p.run()
+            p.waitUntilExit()
+            // terminationStatus is non-zero if the user cancels the dialog.
+            return p.terminationStatus == 0 && isSudoersReady()
+        } catch {
+            return false
+        }
     }
 
     func isDisableSleepOn() -> Bool {
@@ -188,10 +207,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         case .lidClosed(let floor):
             stopCaffeinate()
             if !isSudoersReady() {
-                notify("BotAwake", "Lid-closed mode: sudoers not set up. Run ./install.sh first.")
-                showLidClosedAlert()
-                setMode(.normal)
-                return
+                // First use: one native macOS admin prompt installs the rule. No Terminal.
+                if !installSudoers() {
+                    notify("BotAwake", "Lid-closed mode needs a one-time authorization. Cancelled — staying Normal.")
+                    setMode(.normal)
+                    return
+                }
             }
             if !setDisableSleep(true) {
                 notify("BotAwake", "Lid-closed mode: sudo command failed. Check /etc/sudoers.d/botawake.")

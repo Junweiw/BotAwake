@@ -4,12 +4,17 @@ A guide for picking up this project on **any Mac** (not tied to the original mac
 
 ## ⏩ Current work (2026-06): Lid-Closed Awake mode — read this first
 
-Active feature in flight: a `lidClosed` mode using `pmset disablesleep` so the
-bot stays reachable with the lid closed, **even on battery**.
+A `lidClosed` mode using `pmset disablesleep` so the bot stays reachable with
+the lid closed, **even on battery**.
 
-- **State:** stages 1–2 done (fact-check + decisions locked); stage 3 design
-  proposal written, **awaiting user approval — HARD GATE: no spec, no
-  implementation code until approved.**
+- **State (2026-06-15): SHIPPED.** Implemented in `Sources/main.swift` with
+  10/20/30% battery floors, crash recovery, and auto-clear on mode switch/quit.
+  The one-time root setup now happens through macOS's **native auth dialog**
+  (`osascript … with administrator privileges`, `installSudoers()`) — **no
+  Terminal needed**; it writes `/etc/sudoers.d/botawake` once, then toggles are
+  password-free. README updated to match.
+- **History:** stages 1–2 (fact-check + decisions locked) and the stage-3 design
+  proposal are preserved below for context.
 - **Resume here:** `docs/process/2026-06-13-lid-closed-design-proposal-DRAFT.md`
   (the proposal to re-present for approval) and
   `docs/process/2026-06-12-dev-process-map.md` (12-stage lifecycle map, locked

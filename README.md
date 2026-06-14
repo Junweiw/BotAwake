@@ -2,6 +2,10 @@
 
 <div align="center">
 
+**Keep your Mac awake so your bots, daemons, and listeners never go silent.**
+
+A one-click menu-bar switch. No background drain, no system settings touched, no dependencies.
+
 [🇬🇧 English](#english) · [🇨🇳 中文](#中文)
 
 </div>
@@ -10,77 +14,80 @@
 
 ## English
 
-A tiny macOS **menu-bar switch** that prevents idle sleep so chat bots, sync daemons, and
-long-running listeners stay reachable. One click to enable, one click to disable.
+### Why BotAwake?
 
-No third-party dependencies. Just a thin wrapper around Apple's built-in `caffeinate` and `pmset`.
+You leave a chat bot, a sync daemon, or a long-running listener on your Mac. You walk away.
+The Mac dozes off — and your bot goes silent. Messages pile up unanswered until you wiggle
+the mouse and wake it back up.
 
-> **Origin story:** Built to solve a specific annoyance — a Feishu/Lark bot whose background
-> listener went silent whenever the Mac dozed off, and only replied once the machine woke again.
+**BotAwake fixes that with one click.** A small cup icon lives in your menu bar:
+
+- **Filled cup** ☕ → your Mac is staying awake, your bot is reachable.
+- **Empty cup** → your Mac is free to sleep normally.
+
+It's a thin, transparent wrapper around Apple's own `caffeinate` and `pmset` — so it's
+fast, safe, and never secretly changes your power settings.
+
+> **Origin story:** Built to fix one real annoyance — a Feishu/Lark bot whose listener went
+> silent every time the Mac dozed off, only replying once the machine woke again.
 
 ![BotAwake demo](docs/demo.gif)
 
-### Features
+### Pick the mode that fits
 
-The menu-bar cup icon is **filled** when a keep-awake mode is active, **empty** when the
-Mac is free to sleep. Click it to choose a mode:
+Click the cup icon and choose how awake you want to be. Most people only ever need the
+default (**Awake on power only**).
 
 ![BotAwake menu](docs/menu.png)
 
-#### Modes
+| Mode | Best for | Keeps awake when… | Battery cost |
+|------|----------|-------------------|--------------|
+| **Awake on power only** ★ *(default)* | Daily use, plugged in at a desk | Plugged in; auto-pauses on battery | None — never drains battery |
+| **Stay awake** | Quick "don't sleep right now" | Lid is **open** (screen may lock) | High |
+| **Awake for a set time** | A meeting, a download, a build | Next 1h or 4h, then back to Normal | Limited |
+| **Stay awake with lid closed** | Closing the laptop but keeping the bot live | Lid is **closed**, even on battery | Medium (with battery floor) |
+| **Keep screen on too** | Live demos, dashboards | Display stays lit, no lock | Highest |
+| **Normal (allow sleep)** | Turning it all off | Never — factory behavior | Best |
 
-| Mode | What it does | Battery |
-|------|-------------|---------|
-| **Normal (allow sleep)** | Factory behavior — Mac sleeps when idle. | Best |
-| **Stay awake** | Mac stays awake; screen can sleep & lock; **lid must stay open**. | High |
-| **Awake on power only** | Auto-pauses on battery, resumes when plugged in. ★ Default. | None — never drains battery |
-| **Awake for a set time** | 1h / 4h, then auto-returns to Normal. | Limited |
-| **Stay awake with lid closed** | Uses `pmset disablesleep` — lid can close. Battery floor protection (10/20/30%). | Medium |
-| **Keep screen on too** | Display stays lit, no lock. Demos only. | Highest |
+> **The one rule worth knowing:** screen off or locked is **not** the same as asleep. In every
+> awake mode your Mac keeps running underneath, so the bot stays reachable even with a dark,
+> locked screen. The *only* thing that normally puts it fully to sleep is **closing the lid** —
+> and that's exactly what **"Stay awake with lid closed"** overrides.
 
-#### Lid-closed Mode
+### Closing the lid? Use Lid-Closed mode
 
-The **"Stay awake with lid closed"** option uses `pmset -a disablesleep 1` to prevent macOS
-from sleeping when the lid is closed — even on battery. Three battery floor levels (10/20/30%)
-provide safety: if battery drops below the floor, the mode auto-disengages.
+Normally, shutting the laptop lid puts the Mac to sleep and your bot goes offline. The
+**"Stay awake with lid closed"** mode keeps it running anyway — even on battery — by using
+Apple's `pmset disablesleep`.
 
-> **One-time setup:** The first time you select this mode, macOS will show a standard
-> authentication dialog asking for your admin password. This creates a sudoers whitelist
-> at `/etc/sudoers.d/botawake` so the app can run `sudo pmset disablesleep` without
-> prompting again. No Terminal commands needed.
+**One click, no Terminal.** The first time you pick this mode, macOS shows its standard
+authorization dialog (Touch ID or your password). Approve it once and you're set — every
+time after that, toggling lid-closed mode is instant and silent. Cancel the dialog and
+BotAwake quietly stays in Normal mode. *(Under the hood, that one approval writes a small
+sudoers whitelist at `/etc/sudoers.d/botawake`; `uninstall.sh` removes it.)*
 
-**Safety features:**
-- **Mode switch:** Switching away from lid-closed mode clears `disablesleep` immediately
-- **Quit:** Quitting BotAwake clears `disablesleep`
-- **Crash recovery:** If the app crashes or is force-killed while `disablesleep` is on, it
-  detects and clears the flag on next launch
+**Battery protection built in.** Choose a floor of **10% / 20% / 30%**. If you're on battery
+and drop below it, BotAwake automatically lets the Mac sleep so you don't come back to a
+dead laptop.
 
-#### Important Rules
+**It cleans up after itself:**
+- Switch to any other mode → lid-closed override clears immediately.
+- Quit BotAwake → override clears.
+- App crashes or is force-killed → it detects the leftover flag and clears it on next launch.
 
-- **Screen off / locked ≠ asleep.** Keeping the Mac awake still lets the display turn off
-  and the screen lock. Underneath, the Mac keeps running, so the bot stays reachable.
-- **Closing the lid = sleep** in all normal modes — use **lid-closed mode** to override.
-- **Clamshell mode** (lid closed, power + external display) works with any keep-awake mode.
-- **Privacy in clamshell:** macOS shows your **unlocked desktop** on the external monitor.
-  Press <kbd>⌃</kbd><kbd>⌘</kbd><kbd>Q</kbd> to lock — the bot stays reachable while locked.
+> **Privacy heads-up:** with the lid closed but an external display attached (clamshell),
+> macOS shows your **unlocked desktop** on that monitor. Press
+> <kbd>⌃</kbd><kbd>⌘</kbd><kbd>Q</kbd> to lock the screen — the bot stays reachable while locked.
 
-#### Reachability at a Glance
+### Is my bot reachable? Quick reference
 
-| Situation | Bot reachable? |
-|-----------|----------------|
-| Lid open, screen off / locked, keep-awake on | ✅ |
-| Lid closed, power + external display (clamshell) | ✅ |
-| Lid closed, power only, no display | ❌ sleeps |
-| Lid closed, on battery | ❌ sleeps |
-| Lid closed + lid-closed mode | ✅ |
-
-### Requirements
-
-- **macOS 14 (Sonoma)** or later — uses menu-item subtitles and SF Symbols
-- **Xcode command-line tools** (`swiftc`). Install with `xcode-select --install`.
-
-> **macOS only.** Built on Apple frameworks (`Cocoa` / `AppKit`, `caffeinate`, `pmset`, `launchd`).
-> Does not run on Windows or Linux.
+| Situation | Reachable? |
+|-----------|:----------:|
+| Lid open, screen off or locked, any awake mode on | ✅ |
+| Lid closed + **Lid-Closed mode** | ✅ |
+| Lid closed, plugged in + external display (clamshell) | ✅ |
+| Lid closed, plugged in, no display, *normal* modes | ❌ sleeps |
+| Lid closed, on battery, *normal* modes | ❌ sleeps |
 
 ### Install
 
@@ -92,9 +99,14 @@ chmod +x build.sh install.sh uninstall.sh
 ```
 
 This builds `BotAwake.app`, copies it to `~/Applications`, and registers a login agent so
-the cup icon returns automatically each time you log in. It starts in **Normal** mode (safe default).
+the cup icon comes back automatically every time you log in. It starts in **Normal** mode —
+nothing changes until you choose a mode.
 
-#### Build Only (No Install)
+**Requirements:** macOS 14 (Sonoma) or later, and Xcode command-line tools (`swiftc`) —
+install with `xcode-select --install`. macOS only (built on `AppKit`, `caffeinate`, `pmset`,
+`launchd`); it does not run on Windows or Linux.
+
+#### Build only (no install)
 
 ```bash
 ./build.sh          # produces dist/BotAwake.app
@@ -104,18 +116,14 @@ open dist/BotAwake.app
 #### Uninstall
 
 ```bash
-./uninstall.sh
+./uninstall.sh      # removes the app, login agent, and the sudoers whitelist
 ```
 
-Your system sleep settings are never modified, so there is nothing else to undo.
+#### Installing from an AI agent / non-interactive setup
 
-#### Agent Install
-
-> For AI agents, automation scripts, or any non-interactive environment. `install.sh`
-> calls `sudo` directly which requires a TTY and password prompt — agents need a
-> different approach for the lid-closed sudoers setup.
-
-**Step 1 — Create the sudoers whitelist via native auth dialog (osascript):**
+`install.sh` will `sudo` to pre-create the lid-closed sudoers whitelist, which needs a TTY
+password prompt. If you're driving this from an automation agent that can trigger GUI
+dialogs, create the whitelist through the native auth dialog instead — no Terminal password:
 
 ```bash
 osascript -e 'do shell script "
@@ -126,31 +134,24 @@ chmod 0440 /etc/sudoers.d/botawake
 " with administrator privileges with prompt "BotAwake needs to create a sudoers whitelist for lid-closed awake mode."'
 ```
 
-This triggers the standard macOS authentication dialog — no Terminal interaction needed.
+If your environment can't show GUI dialogs at all, skip this entirely — **the app sets it up
+itself** the first time a user picks lid-closed mode from the menu.
 
-**Step 2 — Run the install script (sudo part will be skipped):**
+### How it works
 
-```bash
-./install.sh
-```
-
-If your agent cannot trigger GUI dialogs, skip Step 1 and rely on the app to prompt
-the user the first time they select lid-closed mode from the menu.
-
-### How It Works
-
-BotAwake never changes your system power settings. Each mode simply launches (or stops)
-a background process with the right flags:
+BotAwake never edits your saved system power settings. Each mode just starts or stops a
+small background process with the right flags:
 
 | Mode | Mechanism |
 |------|-----------|
-| Stay awake / Power only / Timed | `caffeinate -i -m -s` — prevents idle **system** sleep; display is free to sleep and lock |
-| Keep screen on too | adds `-d` — also prevents display sleep |
-| Power only | polls `pmset -g batt`, keeps caffeinate running only on AC |
-| Timed | adds `-t <seconds>`; auto-returns to Normal when timer ends |
-| Lid closed | `pmset -a disablesleep 1` via sudo (whitelisted in sudoers) — works with lid closed |
+| Stay awake / Power only / Timed | `caffeinate -i -m -s` — blocks idle **system** sleep; display is free to turn off and lock |
+| Keep screen on too | adds `-d` — also blocks display sleep |
+| Awake on power only | polls `pmset -g batt`, runs `caffeinate` only while on AC |
+| Timed | adds `-t <seconds>`; auto-returns to Normal when the timer ends |
+| Lid closed | `pmset -a disablesleep 1` via a one-time-approved sudoers rule — works with the lid shut |
 
-Quitting BotAwake (or choosing **Normal**) stops the process immediately — the Mac is free to sleep again.
+Quitting BotAwake (or choosing **Normal**) stops everything immediately — the Mac is free to
+sleep again.
 
 ### License
 
@@ -162,72 +163,73 @@ MIT — see [LICENSE](LICENSE).
 
 ## 中文
 
-一款极简的 macOS **菜单栏开关**，防止 Mac 空闲休眠，让聊天机器人、同步守护进程、长时间运行的监听器始终在线。
-一键开启，一键关闭。
+### 为什么需要 BotAwake？
 
-无第三方依赖，仅封装了 Apple 内置的 `caffeinate` 和 `pmset`。
+你在 Mac 上挂着一个聊天机器人、同步守护进程或长时间运行的监听器，然后人离开了。
+Mac 一打盹——机器人就静默了。消息堆积无人回复，直到你晃一下鼠标把它唤醒。
 
-> **诞生故事：** 为了解决一个具体痛点——飞书机器人在 Mac 休眠后静默无响应，只有唤醒机器后才回复消息。
+**BotAwake 一键解决这个问题。** 菜单栏里有一个小茶杯图标：
+
+- **实心茶杯** ☕ → Mac 正在保持唤醒，机器人在线可达。
+- **空心茶杯** → Mac 可以正常休眠。
+
+它只是对 Apple 自带的 `caffeinate` 和 `pmset` 的一层轻薄、透明封装——快速、安全，
+**绝不偷偷修改你的电源设置**。
+
+> **诞生故事：** 为解决一个真实痛点而生——飞书机器人在 Mac 休眠后静默无响应，
+> 只有唤醒机器后才回复消息。
 
 ![BotAwake 演示](docs/demo.gif)
 
-### 功能
+### 选择适合你的模式
 
-菜单栏茶杯图标 **实心** = 保持唤醒中，**空心** = Mac 可正常休眠。点击选择模式：
+点击茶杯图标，选择你想要的唤醒程度。大多数人只需要默认的 **仅电源下唤醒**。
 
 ![BotAwake 菜单](docs/menu.png)
 
-#### 模式一览
+| 模式 | 适用场景 | 何时保持唤醒 | 耗电 |
+|------|----------|--------------|------|
+| **仅电源下唤醒** ★ *（默认）* | 接通电源、桌面日常使用 | 接通电源时；使用电池时自动暂停 | 不耗电 |
+| **保持唤醒** | 临时"现在别睡" | **开盖** 时（屏幕可锁定） | 较高 |
+| **定时唤醒** | 一场会议、一次下载、一次编译 | 接下来 1 或 4 小时，然后恢复 Normal | 有限 |
+| **合盖唤醒** | 合上笔记本但保持机器人在线 | **合盖** 时，即使用电池 | 中等（含电量底线） |
+| **屏幕常亮** | 现场演示、仪表盘 | 显示器保持点亮，不锁定 | 最高 |
+| **Normal（允许休眠）** | 全部关闭 | 从不——出厂默认行为 | 最佳 |
 
-| 模式 | 行为 | 电池 |
-|------|------|------|
-| **Normal（允许休眠）** | 默认行为，Mac 空闲时自动休眠 | 最佳 |
-| **保持唤醒（Stay awake）** | Mac 保持唤醒；屏幕可关闭锁定；**必须开盖** | 较高 |
-| **仅电源下唤醒（Awake on power only）** | 使用电池时自动暂停，接通电源时恢复。★ 推荐默认 | 不耗电 |
-| **定时唤醒（Awake for a set time）** | 保持唤醒 1 小时或 4 小时，到期自动恢复 Normal | 有限 |
-| **合盖唤醒（Stay awake with lid closed）** | 使用 `pmset disablesleep`，可合盖运行。电池电量底线保护 (10/20/30%) | 中等 |
-| **屏幕常亮（Keep screen on too）** | 显示器保持点亮，不锁定。仅限演示 | 最高 |
+> **唯一值得记住的规则：** 屏幕关闭或锁定 **不等于** 休眠。在任意唤醒模式下，
+> Mac 底层仍在运行，所以即便屏幕黑屏锁定，机器人依然可达。唯一会让它真正完全休眠的
+> 操作是 **合盖**——而这正是 **"合盖唤醒"** 模式所覆盖的。
 
-#### 合盖模式
+### 要合盖？用合盖唤醒模式
 
-**"Stay awake with lid closed"（合盖唤醒）** 使用 `pmset -a disablesleep 1` 阻止 macOS
-在合盖时休眠——即使使用电池也有效。三种电池电量底线（10/20/30%）提供安全保护：
-当电量低于设定值时，模式自动解除。
+通常合上笔记本盖子会让 Mac 休眠、机器人离线。**"合盖唤醒"** 模式通过 Apple 的
+`pmset disablesleep` 让它继续运行——即使使用电池也有效。
 
-> **一次性设置：** 首次选择此模式时，macOS 会弹出标准认证对话框，要求输入管理员密码。
-> 这会在 `/etc/sudoers.d/botawake` 创建一个 sudoers 白名单，此后应用即可免密执行
-> `sudo pmset disablesleep`。无需终端操作。
+**一键搞定，无需终端。** 首次选择此模式时，macOS 会弹出标准授权对话框
+（Touch ID 或密码）。批准一次即可——此后每次切换合盖模式都是即时、无声的。
+取消对话框，BotAwake 会安静地留在 Normal 模式。*（底层上，这一次批准会写入一个
+小的 sudoers 白名单 `/etc/sudoers.d/botawake`；`uninstall.sh` 会移除它。）*
 
-**安全机制：**
-- **切换模式：** 切换离开合盖模式时，立即清除 `disablesleep` 标志
-- **退出：** 退出 BotAwake 时清除 `disablesleep`
-- **崩溃恢复：** 如果应用在 `disablesleep` 开启时崩溃或被强制退出，下次启动时会检测并清除该标志
+**内置电量保护。** 可选 **10% / 20% / 30%** 底线。若你在用电池且电量跌破底线，
+BotAwake 会自动让 Mac 休眠，避免你回来时面对一台没电的笔记本。
 
-#### 重要规则
+**它会自我清理：**
+- 切换到其他任意模式 → 合盖覆盖立即清除。
+- 退出 BotAwake → 覆盖清除。
+- 应用崩溃或被强制退出 → 下次启动时检测到残留标志并清除。
 
-- **屏幕关闭/锁定 ≠ 休眠。** Mac 仍在运行，机器人始终可达。
-- **合盖 = 休眠**（普通模式下）——使用**合盖唤醒模式**可覆盖。
-- **翻盖模式**（合盖 + 外接电源 + 外接显示器）在任意保持唤醒模式下均可工作。
-- **隐私提醒：** 翻盖模式下，macOS 会在外接显示器上显示**未锁定的桌面**。
-  按 <kbd>⌃</kbd><kbd>⌘</kbd><kbd>Q</kbd> 锁定——机器人锁定状态下仍可达。
+> **隐私提醒：** 合盖但接有外接显示器（翻盖模式）时，macOS 会在该显示器上显示你的
+> **未锁定桌面**。按 <kbd>⌃</kbd><kbd>⌘</kbd><kbd>Q</kbd> 锁屏——锁定状态下机器人仍可达。
 
-#### 可达性速查
+### 我的机器人可达吗？速查表
 
-| 场景 | 机器人可达？ |
-|------|------------|
-| 开盖，屏幕关闭/锁定，保持唤醒中 | ✅ |
-| 合盖 + 外接电源 + 外接显示器（翻盖模式） | ✅ |
-| 合盖 + 仅外接电源（无显示器） | ❌ 休眠 |
-| 合盖 + 电池供电 | ❌ 休眠 |
-| 合盖 + 合盖唤醒模式 | ✅ |
-
-### 系统要求
-
-- **macOS 14 (Sonoma)** 或更高版本——使用菜单项副标题和 SF Symbols
-- **Xcode 命令行工具**（`swiftc`）。运行 `xcode-select --install` 安装
-
-> **仅限 macOS。** 基于 Apple 框架构建（`Cocoa` / `AppKit`、`caffeinate`、`pmset`、`launchd`）。
-> 不支持 Windows 或 Linux。
+| 场景 | 可达？ |
+|------|:------:|
+| 开盖，屏幕关闭或锁定，任意唤醒模式开启 | ✅ |
+| 合盖 + **合盖唤醒模式** | ✅ |
+| 合盖，接电源 + 外接显示器（翻盖模式） | ✅ |
+| 合盖，接电源，无显示器，*普通* 模式 | ❌ 休眠 |
+| 合盖，用电池，*普通* 模式 | ❌ 休眠 |
 
 ### 安装
 
@@ -238,8 +240,12 @@ chmod +x build.sh install.sh uninstall.sh
 ./install.sh
 ```
 
-安装脚本会编译 `BotAwake.app`，复制到 `~/Applications`，并注册登录启动项，每次登录时茶杯图标自动出现。
-启动后默认为 **Normal** 模式（安全默认值）。
+脚本会编译 `BotAwake.app`，复制到 `~/Applications`，并注册登录启动项，每次登录时
+茶杯图标自动出现。启动后为 **Normal** 模式——在你选择模式之前什么都不会改变。
+
+**系统要求：** macOS 14 (Sonoma) 或更高版本，以及 Xcode 命令行工具（`swiftc`，
+运行 `xcode-select --install` 安装）。仅限 macOS（基于 `AppKit`、`caffeinate`、`pmset`、
+`launchd` 构建），不支持 Windows 或 Linux。
 
 #### 仅编译（不安装）
 
@@ -251,17 +257,14 @@ open dist/BotAwake.app
 #### 卸载
 
 ```bash
-./uninstall.sh
+./uninstall.sh      # 移除应用、登录启动项和 sudoers 白名单
 ```
 
-系统休眠设置不会被修改，无需额外清理。
+#### 从 AI 代理 / 非交互式环境安装
 
-#### 自动化安装（面向 AI 代理）
-
-> 适用于 AI 代理、自动化脚本等非交互式环境。`install.sh` 中的 `sudo` 需要终端交互输入密码，
-> 自动化工具需改用以下方式。
-
-**步骤 1 — 通过系统认证对话框创建 sudoers 白名单：**
+`install.sh` 会用 `sudo` 预先创建合盖模式的 sudoers 白名单，这需要终端密码输入。
+如果你通过能触发 GUI 对话框的自动化代理来操作，可改用系统授权对话框创建白名单——
+无需终端密码：
 
 ```bash
 osascript -e 'do shell script "
@@ -272,29 +275,23 @@ chmod 0440 /etc/sudoers.d/botawake
 " with administrator privileges with prompt "BotAwake needs to create a sudoers whitelist for lid-closed awake mode."'
 ```
 
-此命令会触发 macOS 标准认证对话框，无需终端交互。
-
-**步骤 2 — 运行安装脚本（sudoers 部分会自动跳过）：**
-
-```bash
-./install.sh
-```
-
-如果代理无法触发 GUI 对话框，可跳过步骤 1，应用会在用户首次选择合盖模式时自动弹出认证对话框。
+如果你的环境完全无法弹出 GUI 对话框，可直接跳过——**应用会在用户首次从菜单选择
+合盖模式时自动完成设置。**
 
 ### 原理
 
-BotAwake 不修改系统电源设置。每种模式只是启动或停止后台进程：
+BotAwake 从不修改你保存的系统电源设置。每种模式只是用对应参数启动或停止一个
+小后台进程：
 
 | 模式 | 机制 |
 |------|------|
-| 保持唤醒 / 仅电源 / 定时 | `caffeinate -i -m -s` — 阻止空闲**系统**休眠；显示器可正常关闭锁定 |
+| 保持唤醒 / 仅电源 / 定时 | `caffeinate -i -m -s` — 阻止空闲 **系统** 休眠；显示器可正常关闭锁定 |
 | 屏幕常亮 | 增加 `-d` — 同时阻止显示器休眠 |
-| 仅电源 | 轮询 `pmset -g batt`，仅在接通电源时运行 caffeinate |
+| 仅电源下唤醒 | 轮询 `pmset -g batt`，仅在接通电源时运行 `caffeinate` |
 | 定时 | 增加 `-t <秒>`；计时结束自动返回 Normal |
-| 合盖唤醒 | 通过 sudo 执行 `pmset -a disablesleep 1`（sudoers 白名单）——合盖有效 |
+| 合盖唤醒 | 通过一次性授权的 sudoers 规则执行 `pmset -a disablesleep 1`——合盖时仍有效 |
 
-退出 BotAwake（或选择 **Normal**）会立即停止进程，Mac 恢复正常休眠。
+退出 BotAwake（或选择 **Normal**）会立即停止一切，Mac 恢复正常休眠。
 
 ### 许可证
 
