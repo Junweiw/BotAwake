@@ -3,3 +3,6 @@ build/
 *.o
 *.swiftmodule
 .DS_Store
+
+# Private notes — never publish
+*.private.md
