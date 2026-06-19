@@ -293,7 +293,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func statusLine() -> String {
         switch mode {
-        case .normal:    return "Now: Normal — Mac sleeps when idle"
+        case .normal:
+            if isDisableSleepOn() {
+                return "Now: Normal — clearing sleep lock…"
+            }
+            return "Now: Normal — Mac sleeps when idle"
         case .stayAwake: return "Now: Stay awake — keep the lid open"
         case .powerOnly: return onACPower() ? "Now: Awake on power — active (plugged in)"
                                             : "Now: Awake on power — paused (on battery)"

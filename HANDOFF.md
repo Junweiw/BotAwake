@@ -65,6 +65,7 @@ settings are never modified, so there is nothing else to undo).
 | `Resources/AppIcon.icns` | App icon (cup & saucer). |
 | `build.sh` | Builds `dist/BotAwake.app`. |
 | `install.sh` / `uninstall.sh` | Install to `~/Applications` + login agent / remove. |
+| `CHANGELOG.md` | Release history. |
 | `docs/` | README assets (menu screenshot, demo GIF). |
 
 > `dist/` is a build artifact (git-ignored). Don't keep it on the Desktop long-term —
@@ -81,7 +82,23 @@ settings are never modified, so there is nothing else to undo).
   only while on AC.
 - The **menu-bar glyph** is an SF Symbol drawn by the app (`cup.and.saucer[.fill]`),
   separate from the bundle's `.icns` (the icon seen in Finder/Launchpad).
-- Choosing **Normal** or quitting stops `caffeinate` immediately.
+- Choosing **Normal** or quitting stops `caffeinate` immediately and clears any stuck
+  **`SleepDisabled`** flag from lid-closed mode.
+
+## Known caveats
+
+- **Icon cache lag** after reinstall (see above).
+- **Clamshell privacy:** lid-closed-on-power shows your *unlocked* desktop on the
+  external display; press `⌃⌘Q` to lock (the Mac stays awake, bot stays reachable).
+- **Other sleep blockers:** BotAwake does not control `displaysleep` system settings or
+  idle-sleep assertions from other apps (Cursor, Handoff, etc.). See README troubleshooting.
+- For true 24/7 reachability with the lid closed and no monitor, host the bridge
+  on an always-on machine instead — no local switch can beat the lid-closed sleep rule.
+
+## Optional follow-ups (none blocking)
+
+- Add a repo description + topics on GitHub for discoverability.
+- Tag a `v1.0.1` release (see CHANGELOG.md).
 
 ## Reachability rules (important for users)
 
@@ -94,8 +111,8 @@ settings are never modified, so there is nothing else to undo).
 
 A lid-closed **override exists** (`sudo pmset -a disablesleep 1`; works on
 battery too). Originally left out (heat risk in a bag; system-wide change), that
-decision was **reversed in 2026-06**: it is now being built in as the
-`lidClosed` mode with safety fallbacks — see "Current work" at the top.
+decision was **reversed in 2026-06**: it is now built in as the `lidClosed` mode
+with safety fallbacks — see "Current work" at the top.
 
 ## Modifying / rebuilding
 
@@ -106,16 +123,3 @@ decision was **reversed in 2026-06**: it is now being built in as the
   `sips` + `iconutil`. README assets (`docs/menu.png`, `docs/demo.gif`) use the
   same approach — `docs/mockups/menu-mockup.html` → `python3 scripts/render_readme_assets.py`
   — rather than live screen capture, because screenshot hotkeys dismiss an open macOS menu.
-
-## Known caveats
-
-- **Icon cache lag** after reinstall (see above).
-- **Clamshell privacy:** lid-closed-on-power shows your *unlocked* desktop on the
-  external display; press `⌃⌘Q` to lock (the Mac stays awake, bot stays reachable).
-- For true 24/7 reachability with the lid closed and no monitor, host the bridge
-  on an always-on machine instead — no local switch can beat the lid-closed sleep rule.
-
-## Optional follow-ups (none blocking)
-
-- Add a repo description + topics on GitHub for discoverability.
-- Tag a `v1.0.0` release.
