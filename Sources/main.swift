@@ -31,9 +31,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.delegate = self
         statusItem.menu = menu
         // Crash recovery: if disablesleep was left on after a crash, clear it
-        if isDisableSleepOn() {
-            setDisableSleep(false)
-        }
+        ensureDisableSleepOff(notifyOnFailure: true)
         reconcile()
         powerTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { [weak self] _ in
             self?.reconcile()
@@ -95,7 +93,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func setDisableSleep(_ enable: Bool) -> Bool {
         let p = Process()
         p.launchPath = "/usr/bin/sudo"
-        p.arguments = ["/usr/bin/pmset", "-a", "disablesleep", enable ? "1" : "0"]
+        p.arguments = ["-n", "/usr/bin/pmset", "-a", "disablesleep", enable ? "1" : "0"]
         do {
             try p.run()
             p.waitUntilExit()
@@ -137,17 +135,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
-    func isDisableSleepOn() -> Bool {
+    func pmsetOutput(_ args: [String]) -> String {
         let p = Process()
         p.launchPath = "/usr/bin/pmset"
-        p.arguments = ["-g"]
+        p.arguments = args
         let pipe = Pipe()
         p.standardOutput = pipe
-        do { try p.run() } catch { return false }
+        do { try p.run() } catch { return "" }
         p.waitUntilExit()
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let out = String(data: data, encoding: .utf8) ?? ""
-        return out.range(of: "disablesleep\\s+1", options: .regularExpression) != nil
+        return String(data: data, encoding: .utf8) ?? ""
+    }
+
+    func isDisableSleepOn() -> Bool {
+        // Kernel flag shows as "SleepDisabled 1" in `pmset -g`; some macOS versions
+        // also expose "disablesleep 1" under `pmset -g custom`.
+        let summary = pmsetOutput(["-g"])
+        if summary.range(of: #"SleepDisabled\s+1"#, options: .regularExpression) != nil { return true }
+        let custom = pmsetOutput(["-g", "custom"])
+        return custom.range(of: #"disablesleep\s+1"#, options: .regularExpression) != nil
+    }
+
+    @discardableResult
+    func ensureDisableSleepOff(notifyOnFailure: Bool = false) -> Bool {
+        guard isDisableSleepOn() else { return true }
+        let ok = setDisableSleep(false)
+        if !ok && notifyOnFailure {
+            notify("BotAwake", "Could not clear sleep lock. Run: sudo pmset -a disablesleep 0")
+        }
+        return ok
     }
 
     func notify(_ title: String, _ body: String) {
@@ -189,6 +205,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         switch mode {
         case .normal:
             stopCaffeinate()
+            ensureDisableSleepOff()
         case .stayAwake:
             if caffeinate == nil { startCaffeinate(["-i", "-m", "-s"]) }
         case .screenOn:
@@ -233,7 +250,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func setMode(_ m: Mode) {
         // Leaving lidClosed: clear the kernel flag so Mac can sleep again
-        if isLidClosed() { setDisableSleep(false) }
+        if isLidClosed() { ensureDisableSleepOff(notifyOnFailure: true) }
         mode = m
         if case .timed(let secs) = m {
             timedDeadline = Date().addingTimeInterval(TimeInterval(secs))
@@ -255,7 +272,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc func chooseLid10()    { setMode(.lidClosed(10)) }
     @objc func chooseLid20()    { setMode(.lidClosed(20)) }
     @objc func chooseLid30()    { setMode(.lidClosed(30)) }
-    @objc func quit()           { if isLidClosed() { setDisableSleep(false) }; stopCaffeinate(); NSApp.terminate(nil) }
+    @objc func quit()           { ensureDisableSleepOff(notifyOnFailure: true); stopCaffeinate(); NSApp.terminate(nil) }
 
     // MARK: - Menu
 
