@@ -167,7 +167,7 @@ flag. Other things can still block sleep:
 | Other apps | `pmset -g assertions \| head -25` | Cursor, Handoff (`sharingd`), video calls, etc. often hold idle-sleep assertions. |
 | Display timeout | `pmset -g custom \| rg displaysleep` | If **`displaysleep 0`** on battery, the screen never dims — fix with `sudo pmset -b displaysleep 10` (or your preferred minutes). |
 
-**Quick test:** choose **Normal**, quit Cursor, leave the Mac idle for your display-sleep
+**Quick test:** choose **Normal**, leave the Mac idle for your display-sleep
 interval (~10 min by default). See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 ### License
@@ -325,7 +325,7 @@ BotAwake 只控制自身的 `caffeinate` 子进程和合盖模式的 **`SleepDis
 | 其他应用 | `pmset -g assertions \| head -25` | Cursor、Handoff（`sharingd`）、视频会议等常持有 idle-sleep 断言。 |
 | 显示器超时 | `pmset -g custom \| rg displaysleep` | 若电池下 **`displaysleep 0`**，屏幕永不熄灭——可用 `sudo pmset -b displaysleep 10` 修复。 |
 
-**快速测试：** 选择 **Normal**，退出 Cursor，空闲等待显示器休眠间隔（默认约 10 分钟）。
+**快速测试：** 选择 **Normal**，空闲等待显示器休眠间隔（默认约 10 分钟）。
 详见 [CHANGELOG.md](CHANGELOG.md)。
 
 ### 许可证
