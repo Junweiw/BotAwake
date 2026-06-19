@@ -98,7 +98,7 @@ settings are never modified, so there is nothing else to undo).
 ## Optional follow-ups (none blocking)
 
 - Add a repo description + topics on GitHub for discoverability.
-- Tag a `v1.1.0` release (see CHANGELOG.md).
+- Tag a `v1.1.1` release (see CHANGELOG.md).
 
 ## Reachability rules (important for users)
 

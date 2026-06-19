@@ -162,7 +162,7 @@ flag. Other things can still block sleep:
 
 | Check | Command | What it means |
 |-------|---------|---------------|
-| BotAwake sleep lock | `pmset -g \| rg SleepDisabled` | Should be **`0`** in Normal. If **`1`**, run `sudo pmset -a disablesleep 0` or quit and reopen BotAwake (v1.1.0+). |
+| BotAwake sleep lock | `pmset -g \| rg SleepDisabled` | Should be **`0`** in Normal. If **`1`**, run `sudo pmset -a disablesleep 0` or quit and reopen BotAwake (v1.1.1+). |
 | BotAwake caffeinate | `pgrep -lf caffeinate` | Should be empty in Normal. |
 | Other apps | `pmset -g assertions \| head -25` | Cursor, Handoff (`sharingd`), video calls, etc. often hold idle-sleep assertions. |
 | Display timeout | `pmset -g custom \| rg displaysleep` | If **`displaysleep 0`** on battery, the screen never dims — fix with `sudo pmset -b displaysleep 10` (or your preferred minutes). |
@@ -320,7 +320,7 @@ BotAwake 只控制自身的 `caffeinate` 子进程和合盖模式的 **`SleepDis
 
 | 检查项 | 命令 | 含义 |
 |--------|------|------|
-| BotAwake 睡眠锁 | `pmset -g \| rg SleepDisabled` | Normal 下应为 **`0`**。若为 **`1`**，运行 `sudo pmset -a disablesleep 0` 或退出并重新打开 BotAwake（v1.1.0+）。 |
+| BotAwake 睡眠锁 | `pmset -g \| rg SleepDisabled` | Normal 下应为 **`0`**。若为 **`1`**，运行 `sudo pmset -a disablesleep 0` 或退出并重新打开 BotAwake（v1.1.1+）。 |
 | BotAwake caffeinate | `pgrep -lf caffeinate` | Normal 下应为空。 |
 | 其他应用 | `pmset -g assertions \| head -25` | Cursor、Handoff（`sharingd`）、视频会议等常持有 idle-sleep 断言。 |
 | 显示器超时 | `pmset -g custom \| rg displaysleep` | 若电池下 **`displaysleep 0`**，屏幕永不熄灭——可用 `sudo pmset -b displaysleep 10` 修复。 |

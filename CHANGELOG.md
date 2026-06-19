@@ -2,7 +2,7 @@
 
 All notable changes to BotAwake are documented here.
 
-## [1.1.0] — 2026-06-19
+## [1.1.1] — 2026-06-19
 
 ### Fixed
 
@@ -19,13 +19,22 @@ All notable changes to BotAwake are documented here.
 
 - Notification when BotAwake cannot clear the sleep lock (with manual recovery command).
 - README troubleshooting: how to tell BotAwake vs other apps/settings are blocking sleep.
+- Menu status shows "clearing sleep lock…" when Normal detects a stuck flag.
+
+## [1.1.0] — 2026-06-14
+
+### Added
+
+- **Stay awake with lid closed** mode via `pmset disablesleep`, with battery floor
+  protection (10 / 20 / 30%).
+- One-click native macOS admin dialog for sudoers setup (no Terminal).
+- Crash recovery, auto-clear on mode switch and quit.
+- Updated README screenshots and menu copy for lid-closed mode.
 
 ## [1.0.0] — 2026-06-14
 
 ### Added
 
-- Menu-bar app with six awake modes: Normal, Stay awake, Awake on power only, Timed,
-  Stay awake with lid closed, Keep screen on too.
-- Lid-closed mode via `pmset disablesleep` with battery floor (10 / 20 / 30%).
-- One-click native macOS admin dialog for sudoers setup (no Terminal).
-- Login agent install via `install.sh`; crash recovery on launch.
+- Menu-bar app with modes: Normal, Stay awake, Awake on power only, Timed, Keep screen on.
+- `caffeinate`-based keep-awake with 15s power polling.
+- Login agent install via `install.sh`.
