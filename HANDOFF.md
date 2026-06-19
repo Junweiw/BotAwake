@@ -103,9 +103,9 @@ decision was **reversed in 2026-06**: it is now being built in as the
 - After changing the icon or bundle, macOS may cache the old icon; log out/in to
   force a refresh.
 - The icon was generated from an HTML mockup rendered with headless Chrome, then
-  `sips` + `iconutil`. (The README screenshot and demo GIF were produced the same
-  way — HTML → headless Chrome → PNG/Pillow GIF — rather than live screen capture,
-  because screenshot hotkeys dismiss an open macOS menu.)
+  `sips` + `iconutil`. README assets (`docs/menu.png`, `docs/demo.gif`) use the
+  same approach — `docs/mockups/menu-mockup.html` → `python3 scripts/render_readme_assets.py`
+  — rather than live screen capture, because screenshot hotkeys dismiss an open macOS menu.
 
 ## Known caveats
 

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BotAwake README mockup</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 1280px;
+      height: 800px;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      background: linear-gradient(135deg, #7b5cff 0%, #5b8cff 38%, #4f7df0 62%, #6a4fd8 100%);
+    }
+    .menubar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 14px;
+      gap: 10px;
+      background: rgba(30, 30, 30, 0.55);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      color: rgba(255,255,255,0.92);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .status-icon {
+      width: 28px; height: 20px;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.14);
+      display: flex; align-items: center; justify-content: center;
+      margin-right: 4px;
+    }
+    .status-icon svg { width: 15px; height: 15px; fill: #fff; }
+    .menu-wrap {
+      position: absolute;
+      top: 34px;
+      right: 118px;
+      display: none;
+    }
+    .menu-wrap.open { display: block; }
+    .menu {
+      width: 392px;
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 10px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.12);
+      padding: 6px 0;
+      color: #1d1d1f;
+    }
+    .item, .info {
+      padding: 5px 14px 6px 14px;
+      line-height: 1.2;
+    }
+    .item { cursor: default; position: relative; }
+    .item .title {
+      font-size: 13px;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .item .sub {
+      font-size: 11px;
+      color: rgba(60,60,67,0.72);
+      margin-top: 2px;
+      padding-left: 22px;
+      line-height: 1.35;
+    }
+    .item.selected {
+      background: #0a84ff;
+      color: #fff;
+      margin: 0 4px;
+      border-radius: 6px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    .item.selected .sub { color: rgba(255,255,255,0.82); padding-left: 22px; }
+    .check {
+      width: 14px; display: inline-flex; justify-content: center;
+      font-size: 12px; font-weight: 700;
+    }
+    .chevron {
+      margin-left: auto;
+      font-size: 11px;
+      color: rgba(60,60,67,0.55);
+    }
+    .item.selected .chevron { color: rgba(255,255,255,0.85); }
+    .info .title {
+      font-size: 12px;
+      color: rgba(60,60,67,0.78);
+      font-weight: 500;
+    }
+    .info .sub {
+      font-size: 11px;
+      color: rgba(60,60,67,0.62);
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+    .sep {
+      height: 1px;
+      background: rgba(60,60,67,0.16);
+      margin: 5px 10px;
+    }
+    .quit .title { font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="menubar">
+    <div class="status-icon" id="cup">
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <path id="cup-path" d="M4.5 7.5h11v1.2a3.8 3.8 0 0 1-3.8 3.8H8.3A3.8 3.8 0 0 1 4.5 8.7V7.5zm1.6-1.2V5.4a2.5 2.5 0 0 1 2.5-2.5h3.8a2.5 2.5 0 0 1 2.5 2.5v.9H6.1zM6.1 14.2h7.8v1.1H6.1v-1.1z"/>
+      </svg>
+    </div>
+    <span id="clock"></span>
+  </div>
+
+  <div class="menu-wrap" id="menuWrap">
+    <div class="menu" id="menu"></div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const menuOpen = params.get('menu') === 'open';
+    const selected = params.get('selected') || 'powerOnly';
+    const active = params.get('active') === '1';
+    const now = new Date();
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('clock').textContent =
+      `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    if (active) {
+      document.getElementById('cup-path').setAttribute('d',
+        'M4.5 7.5h11v1.2a3.8 3.8 0 0 1-3.8 3.8H8.3A3.8 3.8 0 0 1 4.5 8.7V7.5zm1.6-1.2V5.4a2.5 2.5 0 0 1 2.5-2.5h3.8a2.5 2.5 0 0 1 2.5 2.5v.9H6.1zM6.1 14.2h7.8v1.1H6.1v-1.1z');
+    } else {
+      document.getElementById('cup-path').setAttribute('d',
+        'M4.5 7.5h11v1.2a3.8 3.8 0 0 1-3.8 3.8H8.3A3.8 3.8 0 0 1 4.5 8.7V7.5zm1.6-1.2V5.4a2.5 2.5 0 0 1 2.5-2.5h3.8a2.5 2.5 0 0 1 2.5 2.5v.9H6.1z');
+    }
+
+    const statusLines = {
+      normal: 'Now: Normal — Mac sleeps when idle',
+      stayAwake: 'Now: Stay awake — keep the lid open',
+      powerOnly: 'Now: Awake on power — active (plugged in)',
+      screenOn: 'Now: Screen stays on — not locked',
+      timed: 'Now: Timed — ~58 min left, then Normal',
+      lidClosed: 'Now: Lid closed — awake, floor at 20%, plugged in',
+    };
+
+    const items = [
+      { type: 'info', title: 'Bot reachability', sub: statusLines[selected] || statusLines.powerOnly },
+      { type: 'sep' },
+      { id: 'normal', title: 'Normal (allow sleep)', sub: "Bot answers only while you're using the Mac. Best battery." },
+      { id: 'stayAwake', title: 'Stay awake', sub: 'Screen can sleep & lock · lid must stay OPEN · drains battery.' },
+      { id: 'powerOnly', title: 'Awake on power only', sub: 'Auto-pauses on battery, resumes when plugged in. Safe default.' },
+      { id: 'lidClosed', title: 'Stay awake with lid closed', sub: 'Uses pmset disablesleep · lid can close · battery floor protection.', submenu: true },
+      { id: 'timed', title: 'Awake for a set time', sub: 'Auto-returns to Normal when the timer ends.', submenu: true },
+      { id: 'screenOn', title: 'Keep screen on too', sub: 'Display stays lit, no lock. Demos only. Highest battery.' },
+      { type: 'sep' },
+      { type: 'info', title: 'Reminder · the lid', sub: 'Normally closing the lid = sleep. Use "Stay awake with lid closed" to override (works on battery too).' },
+      { type: 'info', title: 'Reminder · privacy', sub: 'Clamshell shows your unlocked desktop. Press ^⌘Q to lock — bot stays reachable.' },
+      { type: 'sep' },
+      { type: 'quit', title: 'Quit BotAwake' },
+    ];
+
+    const menu = document.getElementById('menu');
+    for (const it of items) {
+      if (it.type === 'sep') {
+        const sep = document.createElement('div');
+        sep.className = 'sep';
+        menu.appendChild(sep);
+        continue;
+      }
+      const row = document.createElement('div');
+      row.className = it.type === 'info' ? 'info' : (it.type === 'quit' ? 'item quit' : 'item');
+      if (it.id === selected) row.classList.add('selected');
+      const title = document.createElement('div');
+      title.className = 'title';
+      if (it.id) {
+        const check = document.createElement('span');
+        check.className = 'check';
+        check.textContent = it.id === selected ? '✓' : '';
+        title.appendChild(check);
+      }
+      const label = document.createElement('span');
+      label.textContent = it.title;
+      title.appendChild(label);
+      if (it.submenu) {
+        const chev = document.createElement('span');
+        chev.className = 'chevron';
+        chev.textContent = '›';
+        title.appendChild(chev);
+      }
+      row.appendChild(title);
+      if (it.sub) {
+        const sub = document.createElement('div');
+        sub.className = 'sub';
+        sub.textContent = it.sub;
+        row.appendChild(sub);
+      }
+      menu.appendChild(row);
+    }
+
+    if (menuOpen) document.getElementById('menuWrap').classList.add('open');
+  </script>
+</body>
+</html>
