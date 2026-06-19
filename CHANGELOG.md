@@ -2,7 +2,7 @@
 
 All notable changes to BotAwake are documented here.
 
-## [1.0.1] — 2026-06-19
+## [1.1.0] — 2026-06-19
 
 ### Fixed
 
